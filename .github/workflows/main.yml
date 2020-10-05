@@ -22,7 +22,7 @@ jobs:
 
     - name: dotnet publish
       run: |
-        dotnet publish -c Release -o DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build
+        dotnet publish -c Release -o {env.DOTNET_ROOT}/app/build
         
     - uses: azure/docker-login@v1
       with:
