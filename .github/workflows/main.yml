@@ -22,8 +22,9 @@ jobs:
 
     - name: dotnet publish
       run: |
-        dotnet publish -c Release -o {env.DOTNET_ROOT}/app/build
-        
+        pwd
+        dotnet publish -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build
+                
     - uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.REGISTRY_SERVERNAME }}
