@@ -1,0 +1,49 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      name: checkout
+
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100' # SDK Version to use.
+    - run: dotnet build --configuration Release
+
+    - name: dotnet publish
+      run: |
+        dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/DotNetWebApp 
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_SERVERNAME }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - run: |
+        docker build -t ${{ secrets.REGISTRY_SERVERNAME }}/dotnetwebapp:${{ github.sha }} .
+        docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetwebapp:${{ github.sha }} 
+
+    ## This section should be commented for now as we haven't created the Azure web app yet
+    # - uses: azure/login@v1
+    #   with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    # - uses: azure/webapps-container-deploy@v1
+    #   with:
+    #    app-name: 'GithubDotNetCoreContainer'
+    #    images: '${{ secrets.REGISTRY_SERVERNAME }}.azurecr.io/githubwebapp:${{ github.sha }}'
+    #    
+    # - name: Azure logout
+    #   run: |
+    #     az logout
