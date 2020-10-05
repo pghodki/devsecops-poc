@@ -18,13 +18,11 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100' # SDK Version to use.
-    - run: pwd
-    - run: dir
-    - run: dotnet build --configuration Release DotNetCoreWebApp/DotNetCoreWebApp.csproj
+    - run: dotnet build --c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build   
 
     - name: dotnet publish
       run: |
-        dotnet publish -c Release -o DotNetCoreWebApp/DotNetCoreWebApp.csproj
+        dotnet publish -c Release -o DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build
         
     - uses: azure/docker-login@v1
       with:
