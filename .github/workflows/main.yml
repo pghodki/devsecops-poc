@@ -18,7 +18,7 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.100' # SDK Version to use.
-    - run: dotnet build --c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build   
+    - run: dotnet build -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build   
 
     - name: dotnet publish
       run: |
