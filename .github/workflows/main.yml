@@ -20,7 +20,7 @@ jobs:
         dotnet-version: '3.1.100' # SDK Version to use.
     - run: pwd
     - run: dir
-    - run: dotnet build --configuration Release DotNetCoreWebAp/DotNetCoreWebApp.csproj
+    - run: dotnet build --configuration Release DotNetCoreWebApp/DotNetCoreWebApp.csproj
 
     - name: dotnet publish
       run: |
