@@ -1,12 +1,12 @@
 provider "azurerm" {
-    version     = "2.28.0"
+    version     = "2.31.1"
     environment = "usgovernment"
     features {}
 }
 
 terraform {
   backend "azurerm" {
-      environment = "usgovernment"
+
   }
 }
 
