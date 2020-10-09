@@ -9,6 +9,7 @@ on:
 jobs:
   terraform:
     name: 'Terraform'
+    runs-on: ubuntu-latest
     env: 
      AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS }}
      AZURE_SP_NAME: ${{ secrets.TF_CLIENT_ID }}
@@ -16,12 +17,6 @@ jobs:
      AZURE_TENANT_ID: ${{ secrets.TF_TENANT_ID }}
      AZURE_SUBSCRIPTION_ID: ${{ secrets.TF_SUBSCRIPTION_ID }}
      AZURE_ENV: ${{ secrets.TF_AZURE_ENVIRONMENT }}
-    runs-on: ubuntu-latest
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
     - name: Checkout
@@ -33,7 +28,7 @@ jobs:
         creds: $AZURE_CREDS
 
     - name: Azure CLI script
-      uses: azure/AzureCLI@v1
+      uses: azure/CLI@v1
       with:
         inlineScript: |
          - az cloud set --name $AZURE_ENV
