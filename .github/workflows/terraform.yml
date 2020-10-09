@@ -27,7 +27,7 @@ jobs:
           export ARTIFACT_STORAGE_ACCOUNT_NAME=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}​         
           export ARTIFACT_RESOURCE_GROUP_NAME=${{ secrets.AZ_ARTIFACTS_RG }}​
 
-          cd devsecops-poc/infrastructure/storage          
+          cd infrastructure/storage          
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
