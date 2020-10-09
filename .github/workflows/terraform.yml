@@ -38,7 +38,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var-file="$ServiceCode.tfvars" -var="environment_code=$EnvironmentCode​" -var="artifact_resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -var="artifact_storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -var="artifact_storage_container_name=tfstate"
+      run: terraform plan -var-file="$ServiceCode.d.tfvars" -var="environment_code=$EnvironmentCode​" -var="artifact_resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -var="artifact_storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -var="artifact_storage_container_name=tfstate"
 
     # On push to master, build or change infrastructure according to Terraform configuration files    
     - name: Terraform Apply
