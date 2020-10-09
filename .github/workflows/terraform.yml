@@ -26,16 +26,21 @@ jobs:
           export ARM_TENANT_ID=$(az account show --query tenantId | xargs)
           export ARTIFACT_STORAGE_ACCOUNT_NAME=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}​         
           export ARTIFACT_RESOURCE_GROUP_NAME=${{ secrets.AZ_ARTIFACTS_RG }}​
+
+          cd devsecops/infrastructure/storage          
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init
+      env:
+       EnvironmentCode: "D"
+       ServiceCode: "storage"
+      run: terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=$artifactStorageContainerName" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}​" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}​" -reconfigure "$ServiceCode/"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan
+      run: terraform plan -var-file="./$ServiceCode​.tfvars" -var="environment_code=$EnvironmentCode​" -var="artifact_resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -var="artifact_storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -var="artifact_storage_container_name=tfstate"
 
-      # On push to master, build or change infrastructure according to Terraform configuration files    
+    # On push to master, build or change infrastructure according to Terraform configuration files    
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -var-file="$varsFilename" -var="environment_code=$EnvironmentCode" "$ServiceCode/"
