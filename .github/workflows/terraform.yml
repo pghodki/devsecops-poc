@@ -27,25 +27,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
   
-    # - name: Azure Login
-    #   uses: azure/login@v1
-    #   with:
-    #     creds: $AZURE_CREDS
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: $AZURE_CREDS
 
     - name: Azure CLI script
-      uses: azure/CLI@v1
+      uses: azure/AzureCLI@v1
       with:
         inlineScript: |
          - az cloud set --name $AZURE_ENV
          - az login --service-principal -u $AZURE_SP_NAME -p $AZURE_SP_PASSWORD --tenant $AZURE_TENANT_ID
          - az account set --subscription $AZURE_SUBSCRIPTION_ID
-          # Export Azure settings for Terraform use
-          - export ARM_CLIENT_ID=${​AZURE_SP_NAME}​
-          - export ARM_CLIENT_SECRET=${​AZURE_SP_PASSWORD}​
-          - export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
-          - export ARM_TENANT_ID=$(az account show --query tenantId | xargs)
-          - export ARTIFACT_STORAGE_ACCOUNT_NAME=vafccarcadie${​ENVIRONMENT_ABBR,,}​artistg01
-          - export ARTIFACT_RESOURCE_GROUP_NAME=AZ-VA-FCC-ARCADIE-${​ENVIRONMENT_ABBR^^}​-ART-RGP-01
+         - export ARM_CLIENT_ID=${​AZURE_SP_NAME}​
+         - export ARM_CLIENT_SECRET=${​AZURE_SP_PASSWORD}​
+         - export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
+         - export ARM_TENANT_ID=$(az account show --query tenantId | xargs)
+         - export ARTIFACT_STORAGE_ACCOUNT_NAME=vafccarcadie${​ENVIRONMENT_ABBR,,}​artistg01
+         - export ARTIFACT_RESOURCE_GROUP_NAME=AZ-VA-FCC-ARCADIE-${​ENVIRONMENT_ABBR^^}​-ART-RGP-01
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
