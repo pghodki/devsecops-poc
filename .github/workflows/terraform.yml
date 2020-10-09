@@ -9,6 +9,13 @@ on:
 jobs:
   terraform:
     name: 'Terraform'
+    env: 
+     AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS }}
+     AZURE_SP_NAME: ${{ secrets.TF_CLIENT_ID }}
+     AZURE_SP_PASSWORD: ${{ secrets.TF_CLIENT_SECRET }}
+     AZURE_TENANT_ID: ${{ secrets.TF_TENANT_ID }}
+     AZURE_SUBSCRIPTION_ID: ${{ secrets.TF_SUBSCRIPTION_ID }}
+     AZURE_ENV: ${{ secrets.TF_AZURE_ENVIRONMENT }}
     runs-on: ubuntu-latest
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -17,26 +24,32 @@ jobs:
         shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
+  
+    # - name: Azure Login
+    #   uses: azure/login@v1
+    #   with:
+    #     creds: $AZURE_CREDS
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    #- name: Setup Terraform
-    #  uses: hashicorp/setup-terraform@v1
-    #  with:
-    #    cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-    
-    - name: Azure Cli
-      uses: actions/azurecli@v2
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+         - az cloud set --name $AZURE_ENV
+         - az login --service-principal -u $AZURE_SP_NAME -p $AZURE_SP_PASSWORD --tenant $AZURE_TENANT_ID
+         - az account set --subscription $AZURE_SUBSCRIPTION_ID
+          # Export Azure settings for Terraform use
+          - export ARM_CLIENT_ID=${​AZURE_SP_NAME}​
+          - export ARM_CLIENT_SECRET=${​AZURE_SP_PASSWORD}​
+          - export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
+          - export ARM_TENANT_ID=$(az account show --query tenantId | xargs)
+          - export ARTIFACT_STORAGE_ACCOUNT_NAME=vafccarcadie${​ENVIRONMENT_ABBR,,}​artistg01
+          - export ARTIFACT_RESOURCE_GROUP_NAME=AZ-VA-FCC-ARCADIE-${​ENVIRONMENT_ABBR^^}​-ART-RGP-01
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
-
-    # Checks that all Terraform configuration files adhere to a canonical format
-    #- name: Terraform Format
-    #  run: terraform fmt -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
