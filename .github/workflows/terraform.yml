@@ -10,14 +10,6 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    env: 
-     AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS }}
-     AZURE_SP_NAME: ${{ secrets.TF_CLIENT_ID }}
-     AZURE_SP_PASSWORD: ${{ secrets.TF_CLIENT_SECRET }}
-     AZURE_TENANT_ID: ${{ secrets.TF_TENANT_ID }}
-     AZURE_SUBSCRIPTION_ID: ${{ secrets.TF_SUBSCRIPTION_ID }}
-     AZURE_ENV: ${{ secrets.TF_AZURE_ENVIRONMENT }}
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -25,21 +17,21 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: $AZURE_CREDS
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Azure CLI script
       uses: azure/CLI@v1
       with:
         inlineScript: |
-         - az cloud set --name $AZURE_ENV
-         - az login --service-principal -u $AZURE_SP_NAME -p $AZURE_SP_PASSWORD --tenant $AZURE_TENANT_ID
-         - az account set --subscription $AZURE_SUBSCRIPTION_ID
-         - export ARM_CLIENT_ID=${​AZURE_SP_NAME}​
-         - export ARM_CLIENT_SECRET=${​AZURE_SP_PASSWORD}​
+         - az cloud set --name ${{ secrets.TF_AZURE_ENVIRONMENT }}
+         - az login --service-principal -u ${{ secrets.TF_CLIENT_ID }} -p ${{ secrets.TF_CLIENT_SECRET }} --tenant ${{ secrets.TF_TENANT_ID }}
+         - az account set --subscription ${{ secrets.TF_SUBSCRIPTION_ID }}
+         - export ARM_CLIENT_ID=${{ secrets.TF_CLIENT_ID }}
+         - export ARM_CLIENT_SECRET=${{ secrets.TF_CLIENT_SECRET }}​
          - export ARM_SUBSCRIPTION_ID=$(az account show --query id | xargs)
          - export ARM_TENANT_ID=$(az account show --query tenantId | xargs)
-         - export ARTIFACT_STORAGE_ACCOUNT_NAME=vafccarcadie${​ENVIRONMENT_ABBR,,}​artistg01
-         - export ARTIFACT_RESOURCE_GROUP_NAME=AZ-VA-FCC-ARCADIE-${​ENVIRONMENT_ABBR^^}​-ART-RGP-01
+         - export ARTIFACT_STORAGE_ACCOUNT_NAME=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}​         
+         - export ARTIFACT_RESOURCE_GROUP_NAME=${{ secrets.AZ_ARTIFACTS_RG }}​
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
