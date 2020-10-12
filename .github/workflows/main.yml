@@ -8,7 +8,7 @@ on:
   #[workflow_dispatch]
 
 env:
-  AZURE_RESOURCE_GROUP: devsecops-poc-wbapp-rg
+  AZURE_RESOURCE_GROUP: devsecops-poc-rg
   AZURE_WEBAPP_NAME: devsecopspocappcontainer
   AZURE_APP_PLAN: devsecopspocplan
 
@@ -56,6 +56,8 @@ jobs:
         azcliversion: latest
         inlineScript: |
           az account show
+          az configure --defaults group=${{ env.AZURE_RESOURCE_GROUP }} location=centralus
+          az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
           az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx
           
     - uses: azure/webapps-container-deploy@v1
