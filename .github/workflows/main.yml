@@ -42,9 +42,9 @@ jobs:
         docker build -t ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} .
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
 
-    # - uses: azure/login@v1
-    #   with:
-    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
     # - uses: azure/webapps-container-deploy@v1
     #   with:
     #    app-name: 'GithubDotNetCoreContainer'
