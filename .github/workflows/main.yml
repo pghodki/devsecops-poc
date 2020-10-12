@@ -38,14 +38,14 @@ jobs:
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
 
     ## This section should be commented for now as we haven't created the Azure web app yet
-    # - uses: azure/login@v1
-    #   with:
-    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
-    # - uses: azure/webapps-container-deploy@v1
-    #   with:
-    #    app-name: 'GithubDotNetCoreContainer'
-    #    images: '${{ secrets.REGISTRY_SERVERNAME }}.azurecr.io/githubwebapp:${{ github.sha }}'
-    #    
-    # - name: Azure logout
-    #   run: |
-    #     az logout
+    - uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/webapps-container-deploy@v1
+      with:
+       app-name: 'GithubDotNetCoreContainer'
+       images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
+       
+    - name: Azure logout
+      run: |
+        az logout
