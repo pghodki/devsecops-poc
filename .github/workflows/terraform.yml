@@ -28,7 +28,8 @@ jobs:
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$ServiceCode/"
+      #run: terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$ServiceCode/"
+      run: terraform init -backend-config="key=$(EnvironmentCode}/${ServiceCode}.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$(ServiceCode}/"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
