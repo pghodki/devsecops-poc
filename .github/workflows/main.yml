@@ -3,9 +3,14 @@ name: CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  # push:
-  #   branches: [ master ]
-  [workflow_dispatch]
+  push:
+    branches: [ master ]
+  #[workflow_dispatch]
+
+env:
+  AZURE_RESOURCE_GROUP: devsecops-poc-wbapp-rg
+  AZURE_WEBAPP_NAME: devsecopspocappcontainer
+  AZURE_APP_PLAN: devsecopspocplan
 
 jobs:
   build:
@@ -37,14 +42,27 @@ jobs:
         docker build -t ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} .
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
 
-    ## This section should be commented for now as we haven't created the Azure web app yet
-    - uses: azure/login@v1
+    # - uses: azure/login@v1
+    #   with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    # - uses: azure/webapps-container-deploy@v1
+    #   with:
+    #    app-name: 'GithubDotNetCoreContainer'
+    #    images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
+
+    # Provision a new Web App
+    - name: Create a new Web App for Container
+      uses: azure/CLI@v1
       with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}
+        azcliversion: latest
+        inlineScript: |
+          az account show
+          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx
+          
     - uses: azure/webapps-container-deploy@v1
-      with:
-       app-name: 'GithubDotNetCoreContainer'
-       images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} 
+        images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
        
     - name: Azure logout
       run: |
