@@ -23,7 +23,7 @@ jobs:
 
     - uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.100' # SDK Version to use.
+        dotnet-version: '3.1.100'
     - run: dotnet build -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build   
 
     - name: dotnet publish
@@ -53,8 +53,13 @@ jobs:
         cd DotNetCoreWebApp
         docker build -t ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} .
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
+    
+    # Container scan
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}
 
-    # Provision a new Web App
+    # Provision a new Container Instance
     - name: Create a new WebApp/ACI for Container
       uses: azure/CLI@v1
       with:
