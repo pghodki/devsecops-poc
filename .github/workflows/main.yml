@@ -34,6 +34,10 @@ jobs:
     - uses: azure/login@v1
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Create a ACR
+      uses: azure/CLI@v1
+      with:
        azcliversion: latest
        inlineScript: |
         az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location centralus
