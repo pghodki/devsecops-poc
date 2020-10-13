@@ -22,21 +22,25 @@ jobs:
         inlineScript: |
           az cloud set --name ${{ secrets.TF_AZURE_ENVIRONMENT }}
           az login --service-principal -u ${{ secrets.TF_CLIENT_ID }} -p ${{ secrets.TF_CLIENT_SECRET }} --tenant ${{ secrets.TF_TENANT_ID }}
-          az account set --subscription ${{ secrets.TF_SUBSCRIPTION_ID }}
-         
-          cd Infrastructure/storage
+          az account set --subscription ${{ secrets.TF_SUBSCRIPTION_ID }}        
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       #run: terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$ServiceCode/"
       #run: terraform init -backend-config="key=$(EnvironmentCode}/${ServiceCode}.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}"
-      run: terraform init -backend-config="key=D/storage.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=afceitdartistg01" -backend-config="resource_group_name=AFC-EIT-D-EIS-RGP-01"
+      run: |
+        cd Infrastructure\storage
+        terraform init -backend-config="key=D/storage.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=afceitdartistg01" -backend-config="resource_group_name=AFC-EIT-D-EIS-RGP-01"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan 
-      run: terraform plan -var-file="$ServiceCode.d.tfvars" -var="environment_code=$EnvironmentCode" -var="artifact_resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -var="artifact_storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -var="artifact_storage_container_name=tfstate"
+      run: |
+       cd Infrastructure\storage
+       terraform plan -var-file="$ServiceCode.d.tfvars" -var="environment_code=$EnvironmentCode" -var="artifact_resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -var="artifact_storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -var="artifact_storage_container_name=tfstate"
 
     # On push to master, build or change infrastructure according to Terraform configuration files    
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply -auto-approve -var-file="$varsFilename" -var="environment_code=$EnvironmentCode" "$ServiceCode/"
+      run: | 
+       cd Infrastructure\storage
+       terraform apply -auto-approve -var-file="$varsFilename" -var="environment_code=$EnvironmentCode" "$ServiceCode/"
