@@ -62,7 +62,7 @@ jobs:
         inlineScript: |
           az account show
           az configure --defaults group=${{ env.AZURE_RESOURCE_GROUP }} location=centralus
-          az container create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --image '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}' --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} --registry-login-server ${{ secrets.REGISTRY_SERVERNAME }} --registry-username ${{ secrets.REGISTRY_USERNAME }} --registry-password ${{ secrets.REGISTRY_PASSWORD }} --ports 8081
+          az container create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --image '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}' --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} --registry-login-server ${{ secrets.REGISTRY_SERVERNAME }} --registry-username ${{ secrets.REGISTRY_USERNAME }} --registry-password ${{ secrets.REGISTRY_PASSWORD }} --ports 80
       #   az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
       #   az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx        
 
