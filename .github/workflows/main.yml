@@ -11,6 +11,7 @@ env:
   AZURE_RESOURCE_GROUP: devsecops-poc-rg
   AZURE_WEBAPP_NAME: devsecopspocappcontainer
   AZURE_APP_PLAN: devsecopspocplan
+  ACR_NAME: devsecopspocacr
 
 jobs:
   build:
@@ -29,6 +30,14 @@ jobs:
       run: |
         pwd
         dotnet publish -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build
+    
+    - uses: azure/login@v1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+       azcliversion: latest
+       inlineScript: |
+        az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location centralus
+        az acr create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ secrets.REGISTRY_SERVERNAME }} --sku Basic
                 
     - uses: azure/docker-login@v1
       with:
@@ -40,10 +49,6 @@ jobs:
         cd DotNetCoreWebApp
         docker build -t ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} .
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
-
-    - uses: azure/login@v1
-      with:
-       creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     # Provision a new Web App
     - name: Create a new Web App for Container
