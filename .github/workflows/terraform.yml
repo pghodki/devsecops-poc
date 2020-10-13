@@ -24,7 +24,7 @@ jobs:
           az login --service-principal -u ${{ secrets.TF_CLIENT_ID }} -p ${{ secrets.TF_CLIENT_SECRET }} --tenant ${{ secrets.TF_TENANT_ID }}
           az account set --subscription ${{ secrets.TF_SUBSCRIPTION_ID }}
          
-          cd Infrastructure
+          cd Infrastructure/storage
     
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
