@@ -66,7 +66,7 @@ jobs:
       #   az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
       #   az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx        
 
-    # Failed to deploy web app as container          
+    # Failed to deploy web app as container as it reported that containerized web app has images & other files         
     # - uses: azure/webapps-deploy@v2
     #   with: 
     #     app-name: ${{ env.AZURE_WEBAPP_NAME }} 
