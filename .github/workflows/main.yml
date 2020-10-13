@@ -41,7 +41,7 @@ jobs:
        azcliversion: latest
        inlineScript: |
         az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location centralus
-        az acr create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ secrets.REGISTRY_SERVERNAME }} --sku Basic
+        az acr create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.ACR_NAME }} --sku Basic
                 
     - uses: azure/docker-login@v1
       with:
