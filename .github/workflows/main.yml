@@ -3,9 +3,9 @@ name: CI-CD
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ master ]
-  #[workflow_dispatch]
+  # push:
+  #   branches: [ master ]
+  [workflow_dispatch]
 
 env:
   AZURE_RESOURCE_GROUP: devsecops-poc-rg
