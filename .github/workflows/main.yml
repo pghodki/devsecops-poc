@@ -62,13 +62,14 @@ jobs:
         inlineScript: |
           az account show
           az configure --defaults group=${{ env.AZURE_RESOURCE_GROUP }} location=centralus
-          az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
-          az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx
+          az container create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --image '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}' --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} --ports 8081
+      #   az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
+      #   az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx        
           
-    - uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ env.AZURE_WEBAPP_NAME }} 
-        images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
+    # - uses: azure/webapps-deploy@v2
+    #   with: 
+    #     app-name: ${{ env.AZURE_WEBAPP_NAME }} 
+    #     images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
        
     - name: Azure logout
       run: |
