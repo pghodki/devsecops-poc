@@ -32,7 +32,8 @@ jobs:
           export ARTIFACT_RESOURCE_GROUP_NAME=${{ secrets.AZ_ARTIFACTS_RG }}​
 
           cd Infrastructure/storage
-          terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${​ARTIFACT_STORAGE_ACCOUNT_NAME}"​ -backend-config="resource_group_name=${​ARTIFACT_RESOURCE_GROUP_NAME}​"      
+          #terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${​ARTIFACT_STORAGE_ACCOUNT_NAME}"​ -backend-config="resource_group_name=${​ARTIFACT_RESOURCE_GROUP_NAME}​"      
+          terraform init -backend-config="key=D/storage.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=afceitdartistg01" -backend-config="resource_group_name=AFC-EIT-D-EIS-RGP-01"
     
     # # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     # - name: Terraform Init
