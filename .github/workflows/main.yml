@@ -84,10 +84,10 @@ jobs:
         docker push ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }} 
     
     # Container scan using GitHub Container action
-    - uses: Azure/container-scan@v0
-      name: GitHub Container Scan
-      with:
-        image-name: ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}
+    # - uses: Azure/container-scan@v0
+    #   name: GitHub Container Scan
+    #   with:
+    #     image-name: ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}
 
     - name: Create a new ACI for Container
       uses: azure/CLI@v1
