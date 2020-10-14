@@ -12,6 +12,12 @@ jobs:
     env:
        EnvironmentCode: "D"
        ServiceCode: "storage"
+       ARM_CLIENT_ID: ${{ secrets.TF_CLIENT_ID }}
+       ARM_CLIENT_SECRET: ${{ secrets.TF_CLIENT_SECRET }}​
+       ARM_SUBSCRIPTION_ID: $(az account show --query id | xargs)
+       ARM_TENANT_ID: $(az account show --query tenantId | xargs)
+       ARTIFACT_STORAGE_ACCOUNT_NAME: ${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}​         
+       ARTIFACT_RESOURCE_GROUP_NAME: ${{ secrets.AZ_ARTIFACTS_RG }}​ 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -34,8 +40,8 @@ jobs:
     - name: Terraform Init
       run: |
         cd Infrastructure/storage
-        terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$ServiceCode/"
-        #terraform init -backend-config="key=D/storage.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=afceitdartistg01" -backend-config="resource_group_name=AFC-EIT-D-EIS-RGP-01"
+        #terraform init -backend-config="key=$EnvironmentCode/$ServiceCode.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=${{ secrets.AF_ARTIFACTS_STORAGE_NAME }}" -backend-config="resource_group_name=${{ secrets.AZ_ARTIFACTS_RG }}" -reconfigure "$ServiceCode/"
+        terraform init -backend-config="key=D/storage.tfstate" -backend-config="container_name=tfstate" -backend-config="storage_account_name=afceitdartistg01" -backend-config="resource_group_name=AFC-EIT-D-EIS-RGP-01"
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan 
