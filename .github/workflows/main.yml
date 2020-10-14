@@ -1,4 +1,4 @@
-name: CI-CD
+name: DevSecOps GitHub Action CI-CD
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -19,23 +19,51 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-      name: checkout
+      name: Code Checkout
 
     - uses: actions/setup-dotnet@v1
+      name: DotNet Build
       with:
         dotnet-version: '3.1.100'
     - run: dotnet build -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build   
 
-    - name: dotnet publish
+    - name: DotNet Publish
       run: |
         pwd
         dotnet publish -c Release DotNetCoreWebApp/DotNetCoreWebApp.csproj -o {env.DOTNET_ROOT}/app/build
     
+    # Performs an Anchore container image vulnerability and compliance scan, 
+    # and integrates the results with GitHub Advanced Security code scanning feature.
+    # For more information on the Anchore scan action usage and parameters, see
+    # https://github.com/anchore/scan-action.  For more information on
+    # Anchore container image scanning in general, see
+    # https://docs.anchore.com.
+    - name: Build the Docker image locally for Anchore Container Scan
+      run:  |
+        cd DotNetCoreWebApp
+        docker build --file Dockerfile --tag devsecops/pocimage:latest .
+        docker images
+    
+    - name: Run the local Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
+      uses: anchore/scan-action@v2
+      with:
+        image: "devsecops/pocimage:latest"
+        fail-build: true
+        severity-cutoff: medium
+    
+    - name: Upload Artifact
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2.2.0
+      with:
+        name: anchore-vulnerabilities
+        path: vulnerabilities.json
+
     - uses: azure/login@v1
+      name: Az Login
       with:
        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Create a ACR
+    - name: Create ACR
       uses: azure/CLI@v1
       with:
        azcliversion: latest
@@ -44,6 +72,7 @@ jobs:
         az acr create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.ACR_NAME }} --sku Basic
                 
     - uses: azure/docker-login@v1
+      name: ACR Login
       with:
         login-server: ${{ secrets.REGISTRY_SERVERNAME }}
         username: ${{ secrets.REGISTRY_USERNAME }}
@@ -56,26 +85,18 @@ jobs:
     
     # Container scan using GitHub Container action
     - uses: Azure/container-scan@v0
+      name: GitHub Container Scan
       with:
         image-name: ${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}
 
-    # Provision a new Container Instance
-    - name: Create a new WebApp/ACI for Container
+    - name: Create a new ACI for Container
       uses: azure/CLI@v1
       with:
         azcliversion: latest
         inlineScript: |
           az account show
           az configure --defaults group=${{ env.AZURE_RESOURCE_GROUP }} location=centralus
-          az container create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --image '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}' --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} --registry-login-server ${{ secrets.REGISTRY_SERVERNAME }} --registry-username ${{ secrets.REGISTRY_USERNAME }} --registry-password ${{ secrets.REGISTRY_PASSWORD }} --ports 80
-      #   az appservice plan create --name ${{ env.AZURE_APP_PLAN }} --sku F1
-      #   az webapp create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --plan ${{ env.AZURE_APP_PLAN }} --name ${{ env.AZURE_WEBAPP_NAME }}  -i nginx        
-
-    # Failed to deploy web app as container as it reported that containerized web app has images & other files         
-    # - uses: azure/webapps-deploy@v2
-    #   with: 
-    #     app-name: ${{ env.AZURE_WEBAPP_NAME }} 
-    #     images: '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}'
+          az container create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --image '${{ secrets.REGISTRY_SERVERNAME }}/dotnetcorewebapp:${{ github.sha }}' --dns-name-label ${{ env.AZURE_WEBAPP_NAME }} --registry-login-server ${{ secrets.REGISTRY_SERVERNAME }} --registry-username ${{ secrets.REGISTRY_USERNAME }} --registry-password ${{ secrets.REGISTRY_PASSWORD }} --ports 80      
        
     - name: Azure logout
       run: |
