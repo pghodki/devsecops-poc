@@ -1,1 +1,0 @@
-saname = "ghstgacct1"
