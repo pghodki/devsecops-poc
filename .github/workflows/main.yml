@@ -3,9 +3,9 @@ name: DevSecOps GitHub Action CI-CD
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch- test
 on:
-  push:
-    branches: [ master ]
-  #[workflow_dispatch]
+  # push:
+  #   branches: [ master ]
+  [workflow_dispatch]
 
 env:
   AZURE_RESOURCE_GROUP: devsecops-poc-rg
@@ -38,25 +38,25 @@ jobs:
     # https://github.com/anchore/scan-action.  For more information on
     # Anchore container image scanning in general, see
     # https://docs.anchore.com.
-    - name: Build the Docker image locally for Anchore Container Scan
-      run:  |
-        cd DotNetCoreWebApp
-        docker build --file Dockerfile --tag devsecops/pocimage:latest .
-        docker images
+    # - name: Build the Docker image locally for Anchore Container Scan
+    #   run:  |
+    #     cd DotNetCoreWebApp
+    #     docker build --file Dockerfile --tag devsecops/pocimage:latest .
+    #     docker images
     
-    - name: Run the local Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
-      uses: anchore/scan-action@v2
-      with:
-        image: "devsecops/pocimage:latest"
-        fail-build: true
-        severity-cutoff: medium
+    # - name: Run the local Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
+    #   uses: anchore/scan-action@v2
+    #   with:
+    #     image: "devsecops/pocimage:latest"
+    #     fail-build: true
+    #     severity-cutoff: medium
     
-    - name: Upload Artifact
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2.2.0
-      with:
-        name: anchore-vulnerabilities
-        path: vulnerabilities.json
+    # - name: Upload Artifact
+    #   if: ${{ always() }}
+    #   uses: actions/upload-artifact@v2.2.0
+    #   with:
+    #     name: anchore-vulnerabilities
+    #     path: vulnerabilities.json
 
     - uses: azure/login@v1
       name: Az Login
