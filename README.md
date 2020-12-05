@@ -1,4 +1,4 @@
-# DevSecOps - POC for Presentation
+# DevSecOps - POC for Presentation/Blog post
 
 - GitHub CI/CD has been leveraged for testing DevSecOps pipeline
 - GitHub Actions pipeline has been implemented
