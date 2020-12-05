@@ -10,4 +10,4 @@
   - Container action has been added
   - Anchore container scanning third-party open source tool has been added
 
-Note: Terraform for Infrastructure is not yet functioning!
+Note: Terraform for Infrastructure is not yet implemented!
