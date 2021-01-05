@@ -9,3 +9,4 @@
 - Container scanning
   - Container action has been added
   - Anchore container scanning third-party open source tool has been added
+- [Blog post link](https://www.ais.com/devsecops-with-github-actions/)
